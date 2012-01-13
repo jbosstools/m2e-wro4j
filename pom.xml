@@ -51,6 +51,13 @@
       <layout>p2</layout>
       <url>https://repository.sonatype.org/content/repositories/forge-sites/m2e/1.1.0/N/LATEST/</url>
     </repository>
+    
+    <repository>
+      <id>m2e-wtp</id>
+      <layout>p2</layout>
+      <url>http://download.jboss.org/jbosstools/updates/m2eclipse-wtp/</url>
+    </repository>
+        
   </repositories>
 
   <build>
