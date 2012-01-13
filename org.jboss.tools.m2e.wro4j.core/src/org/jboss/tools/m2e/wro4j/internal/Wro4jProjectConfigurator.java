@@ -17,20 +17,16 @@ import org.eclipse.m2e.core.project.configurator.AbstractBuildParticipant;
 import org.eclipse.m2e.core.project.configurator.AbstractProjectConfigurator;
 import org.eclipse.m2e.core.project.configurator.ProjectConfigurationRequest;
 
-public class Wro4jProjectConfigurator
-    extends AbstractProjectConfigurator
-{
+public class Wro4jProjectConfigurator extends AbstractProjectConfigurator {
     @Override
     public AbstractBuildParticipant getBuildParticipant( IMavenProjectFacade projectFacade,
                                                          MojoExecution execution,
-                                                         IPluginExecutionMetadata executionMetadata )
-    {
+                                                         IPluginExecutionMetadata executionMetadata ){
         return new Wro4jBuildParticipant( execution );
     }
 
 	@Override
-	public void configure(ProjectConfigurationRequest request,
-			IProgressMonitor monitor) throws CoreException {
+	public void configure(ProjectConfigurationRequest request, IProgressMonitor monitor) throws CoreException {
 		// Nothing to configure here
 	}
 }
