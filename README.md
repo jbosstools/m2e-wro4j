@@ -7,3 +7,6 @@ if a change is detected on css, js, less, json, sass resources under wro4j-maven
 
 If m2e-wtp is installed and wro4j's target directories are set under ${project.build.directory}/${project.build.finalName/ then the resources 
 will be generated under ${project.build.directory}/m2e-wtp/web-resources/ so they can be picked up and deployed by WTP on the fly.
+
+
+For the moment, m2e-wro4j dev builds can be installed from http://download.jboss.org/jbosstools/builds/staging/m2e-wro4j/all/repo/
