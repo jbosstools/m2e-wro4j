@@ -23,7 +23,7 @@
   <name>M2E connector for WRO4J :: Parent </name>
   <properties>
     <tycho-version>0.13.0</tycho-version>
-    <test.timeout>300</test.timeout><!--  5 mins -->       
+    <test.timeout>600</test.timeout><!--  10 mins -->       
     <tycho.test.jvmArgs>-Xmx512m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
   </properties>
 
@@ -93,6 +93,7 @@
               <include>**/*Test.java</include>
             </includes>
             <argLine>${tycho.test.jvmArgs}</argLine>
+            <appArgLine>-pluginCustomization ${basedir}/plugin_customization.ini</appArgLine>
             <!-- kill test JVM it tests take more than ${test.timeout} seconds to finish -->
             <forkedProcessTimeoutInSeconds>${test.timeout}</forkedProcessTimeoutInSeconds>
           </configuration>
