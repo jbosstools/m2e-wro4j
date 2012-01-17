@@ -29,6 +29,7 @@
 
   <modules>
     <module>org.jboss.tools.m2e.wro4j.core</module>  
+    <module>org.jboss.tools.m2e.wro4j.ui</module>  
     <module>org.jboss.tools.m2e.wro4j.tests</module>
     <module>org.jboss.tools.m2e.wro4j.feature</module>
     <module>org.jboss.tools.m2e.wro4j.site</module>
