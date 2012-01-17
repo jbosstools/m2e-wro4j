@@ -19,7 +19,7 @@
             &lt;/execution&gt;
         &lt;/executions&gt;
           &lt;configuration&gt;
-            &lt;jsDestinationFolder&gt;${cursor}$${project.build.directory}/$${project.build.finalName}/resources/js&lt;/jsDestinationFolder&gt;
+            &lt;jsDestinationFolder&gt;$${project.build.directory}/$${project.build.finalName}/${cursor}resources/js&lt;/jsDestinationFolder&gt;
             &lt;cssDestinationFolder&gt;$${project.build.directory}/$${project.build.finalName}/resources/styles&lt;/cssDestinationFolder&gt;
           &lt;/configuration&gt;
         &lt;/plugin&gt;</pattern>
