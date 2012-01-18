@@ -16,5 +16,20 @@
         </configurator>
       </action>
     </pluginExecution>
+    <pluginExecution>
+      <pluginExecutionFilter>
+        <groupId>ro.isdc.wro4j</groupId>
+		<artifactId>wro4j-maven-plugin</artifactId>
+		<versionRange>[1.0,)</versionRange>
+		<goals>
+          <goal>csslint</goal>
+          <goal>jslint</goal>
+          <goal>jshint</goal>
+        </goals>
+      </pluginExecutionFilter>			
+      <action>
+        <ignore/>
+      </action>
+    </pluginExecution>  
   </pluginExecutions>
 </lifecycleMappingMetadata>
