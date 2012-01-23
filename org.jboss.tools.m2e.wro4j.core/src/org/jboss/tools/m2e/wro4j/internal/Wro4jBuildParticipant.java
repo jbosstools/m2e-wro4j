@@ -115,7 +115,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     // Let's restrict ourselves to a few known extensions
     for (String file : includedFiles) {
       // FIXME That list is completely arbitrary
-      if (file.matches("([^\\s]+(\\.(?i)(js|css|scss|less|coffee|json))$)")) {
+      if (file.matches("([^\\s]+(\\.(?i)(js|css|scss|sass|less|coffee|json))$)")) {
         return true;
       }
     }
