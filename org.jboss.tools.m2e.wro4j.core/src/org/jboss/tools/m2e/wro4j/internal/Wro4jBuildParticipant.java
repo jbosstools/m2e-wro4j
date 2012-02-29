@@ -29,6 +29,7 @@ import org.eclipse.m2e.core.embedder.IMaven;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.MavenProjectUtils;
 import org.eclipse.m2e.core.project.configurator.MojoExecutionBuildParticipant;
+import org.eclipse.osgi.util.NLS;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
@@ -72,6 +73,11 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
       // Add custom configuration
       mojoExecution.setConfiguration(customConfiguration);
 
+      if (monitor != null) {
+    	  String taskName = NLS.bind("Invoking {0} on {1}", getMojoExecution().getMojoDescriptor().getFullGoalName()
+  														, getMavenProjectFacade().getProject().getName());
+    	  monitor.setTaskName(taskName);
+      }
       // execute mojo
       result = super.build(kind, monitor);
 
