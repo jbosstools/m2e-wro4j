@@ -9,4 +9,6 @@ If m2e-wtp is installed and wro4j's target directories are set under ${project.b
 will be generated under ${project.build.directory}/m2e-wtp/web-resources/ so they can be picked up and deployed by WTP on the fly.
 
 
-For the moment, m2e-wro4j dev builds can be installed from http://download.jboss.org/jbosstools/builds/staging/m2e-wro4j/all/repo/
+New releases are available from http://download.jboss.org/jbosstools/updates/m2e-wro4j/
+
+Dev builds can be installed from http://download.jboss.org/jbosstools/builds/staging/m2e-wro4j/all/repo/
