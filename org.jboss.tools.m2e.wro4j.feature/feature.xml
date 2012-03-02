@@ -2,7 +2,7 @@
 <feature
       id="org.jboss.tools.m2e.wro4j.feature"
       label="%featureName"
-      version="1.0.0.qualifier"
+      version="1.0.0.20120302-0935"
       provider-name="%providerName"
       plugin="org.jboss.tools.m2e.wro4j.core">
 
