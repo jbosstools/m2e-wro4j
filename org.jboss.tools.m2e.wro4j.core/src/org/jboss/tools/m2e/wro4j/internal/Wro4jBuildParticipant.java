@@ -11,6 +11,8 @@ package org.jboss.tools.m2e.wro4j.internal;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.MojoExecution;
 import org.codehaus.plexus.util.Scanner;
@@ -34,6 +36,10 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 
+  private static final Pattern WRO4J_FILES_PATTERN = Pattern.compile("^(\\/?.*\\/)?wro\\.(xml|groovy|properties)$");
+	
+  private static final Pattern WEB_RESOURCES_PATTERN = Pattern.compile("([^\\s]+(\\.(?i)(js|css|scss|sass|less|coffee|json))$)");
+  
   private static final String DESTINATION_FOLDER = "destinationFolder";
   private static final String CSS_DESTINATION_FOLDER = "cssDestinationFolder";
   private static final String JS_DESTINATION_FOLDER = "jsDestinationFolder";
@@ -120,8 +126,15 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     // Quick'n dirty trick to avoid calling wro4j for ANY file change
     // Let's restrict ourselves to a few known extensions
     for (String file : includedFiles) {
-      // FIXME That list is completely arbitrary
-      if (file.matches("([^\\s]+(\\.(?i)(js|css|scss|sass|less|coffee|json))$)")) {
+      String portableFile = file.replace('\\', '/');
+      //use 2 matchers only to improve readability	
+      Matcher m = WRO4J_FILES_PATTERN.matcher(portableFile);
+      if (m.matches()) {
+    	  return true;
+      }
+
+      m = WEB_RESOURCES_PATTERN.matcher(portableFile);
+      if (m.matches()) {
         return true;
       }
     }
