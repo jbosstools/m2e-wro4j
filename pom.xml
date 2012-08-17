@@ -22,7 +22,7 @@
   <packaging>pom</packaging>
   <name>M2E connector for WRO4J :: Parent </name>
   <properties>
-    <tycho-version>0.14.1</tycho-version>
+    <tycho-version>0.15.0</tycho-version>
     <test.timeout>600</test.timeout><!--  10 mins -->       
     <tycho.test.jvmArgs>-Xmx512m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
   </properties>
@@ -56,7 +56,7 @@
     <repository>
       <id>m2e-wtp</id>
       <layout>p2</layout>
-      <url>http://download.jboss.org/jbosstools/updates/m2eclipse-wtp/</url>
+      <url>http://download.jboss.org/jbosstools/updates/requirements/m2eclipse/m2e-wtp-juno/</url>
     </repository>
         
   </repositories>
