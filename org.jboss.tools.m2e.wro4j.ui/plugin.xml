@@ -9,7 +9,7 @@
       <pattern>        &lt;plugin&gt;
         &lt;groupId&gt;ro.isdc.wro4j&lt;/groupId&gt;
         &lt;artifactId&gt;wro4j-maven-plugin&lt;/artifactId&gt;
-        &lt;version&gt;1.4.8.1&lt;/version&gt;
+        &lt;version&gt;1.4.9&lt;/version&gt;
         &lt;executions&gt;
             &lt;execution&gt;
                &lt;phase&gt;compile&lt;/phase&gt;
