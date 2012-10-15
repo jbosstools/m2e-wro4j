@@ -18,7 +18,7 @@
 
   <groupId>org.jboss.tools.m2e.wro4j</groupId>
   <artifactId>org.jboss.tools.m2e.wro4j.parent</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>M2E connector for WRO4J :: Parent </name>
   <properties>
