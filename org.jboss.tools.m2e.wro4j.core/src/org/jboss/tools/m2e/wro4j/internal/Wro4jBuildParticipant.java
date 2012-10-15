@@ -38,7 +38,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 
   private static final Pattern WRO4J_FILES_PATTERN = Pattern.compile("^(\\/?.*\\/)?wro\\.(xml|groovy|properties)$");
 	
-  private static final Pattern WEB_RESOURCES_PATTERN = Pattern.compile("([^\\s]+(\\.(?i)(js|css|scss|sass|less|coffee|json))$)");
+  private static final Pattern WEB_RESOURCES_PATTERN = Pattern.compile("([^\\s]+(\\.(?i)(js|css|scss|sass|less|coffee|json|template))$)");
   
   private static final String DESTINATION_FOLDER = "destinationFolder";
   private static final String CSS_DESTINATION_FOLDER = "cssDestinationFolder";
