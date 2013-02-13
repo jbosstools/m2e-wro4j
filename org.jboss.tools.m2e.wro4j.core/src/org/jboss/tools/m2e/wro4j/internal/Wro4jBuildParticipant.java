@@ -10,6 +10,7 @@ package org.jboss.tools.m2e.wro4j.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.String;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +44,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
   private static final String DESTINATION_FOLDER = "destinationFolder";
   private static final String CSS_DESTINATION_FOLDER = "cssDestinationFolder";
   private static final String JS_DESTINATION_FOLDER = "jsDestinationFolder";
+  private static final String GROUP_NAME_MAPPING_FILE = "groupNameMappingFile";
 
   public Wro4jBuildParticipant(MojoExecution execution) {
     super(execution, true);
@@ -68,14 +70,17 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     Set<IProject> result = null;
     try {
 
-      File destinationFolder = getFolder(mojoExecution, DESTINATION_FOLDER);
-      File jsDestinationFolder = getFolder(mojoExecution, JS_DESTINATION_FOLDER);
-      File cssDestinationFolder = getFolder(mojoExecution, CSS_DESTINATION_FOLDER);
+      File destinationFolder = getLocation(mojoExecution, DESTINATION_FOLDER);
+      File jsDestinationFolder = getLocation(mojoExecution, JS_DESTINATION_FOLDER);
+      File cssDestinationFolder = getLocation(mojoExecution, CSS_DESTINATION_FOLDER);
+      File groupNameMappingFile = getLocation(mojoExecution, GROUP_NAME_MAPPING_FILE);
 
       Xpp3Dom customConfiguration = customize(originalConfiguration, 
                                               destinationFolder, 
                                               jsDestinationFolder, 
-                                              cssDestinationFolder);
+                                              cssDestinationFolder,
+                                              groupNameMappingFile);
+
       // Add custom configuration
       mojoExecution.setConfiguration(customConfiguration);
 
@@ -87,8 +92,8 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
       // execute mojo
       result = super.build(kind, monitor);
 
-      // tell m2e builder to refresh generated folder
-      refreshFolders(mojoExecution, buildContext);
+      // tell m2e builder to refresh generated resources
+      refreshWorkspace(mojoExecution, buildContext);
 
     } finally {
       // restore original configuration
@@ -98,11 +103,11 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     return result;
   }
 
-  private File getFolder(MojoExecution mojoExecution, String folderName)
+  private File getLocation(MojoExecution mojoExecution, String parameterName)
       throws CoreException {
     IMaven maven = MavenPlugin.getMaven();
-    File folder = maven.getMojoParameterValue(getSession(), mojoExecution, folderName, File.class);
-    return folder;
+    File location = maven.getMojoParameterValue(getSession(), mojoExecution, parameterName, File.class);
+    return location;
   }
 
   private boolean wroResourceChangeDetected(MojoExecution mojoExecution,
@@ -114,7 +119,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     }
 
     // check if any of the web resource files changed
-    File source = getFolder(mojoExecution, "contextFolder");
+    File source = getLocation(mojoExecution, "contextFolder");
     // TODO also analyze output classes folders as wro4j can use classpath files
     Scanner ds = buildContext.newScanner(source); // delta or full scanner
     ds.scan();
@@ -158,24 +163,25 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     return false;
   }
 
-  private void refreshFolders(MojoExecution mojoExecution,
+  private void refreshWorkspace(MojoExecution mojoExecution,
       BuildContext buildContext) throws CoreException {
-    refreshFolder(mojoExecution, buildContext, DESTINATION_FOLDER);
-    refreshFolder(mojoExecution, buildContext, CSS_DESTINATION_FOLDER);
-    refreshFolder(mojoExecution, buildContext, JS_DESTINATION_FOLDER);
+    refreshResource(mojoExecution, buildContext, DESTINATION_FOLDER);
+    refreshResource(mojoExecution, buildContext, CSS_DESTINATION_FOLDER);
+    refreshResource(mojoExecution, buildContext, JS_DESTINATION_FOLDER);
+    refreshResource(mojoExecution, buildContext, GROUP_NAME_MAPPING_FILE);
   }
 
-  private void refreshFolder(MojoExecution mojoExecution, 
-      BuildContext buildContext, String directoryName) throws CoreException {
-    File outputDirectory = getFolder(mojoExecution, directoryName);
-    if (outputDirectory != null && outputDirectory.exists()) {
-      buildContext.refresh(outputDirectory);
+  private void refreshResource(MojoExecution mojoExecution,
+      BuildContext buildContext, String parameterName) throws CoreException {
+    File location = getLocation(mojoExecution, parameterName);
+    if (location != null && location.exists()) {
+      buildContext.refresh(location);
     }
   }
 
   private Xpp3Dom customize(Xpp3Dom originalConfiguration,
       File originalDestinationFolder, File originalJsDestinationFolder,
-      File originalCssDestinationFolder) throws IOException {
+      File originalCssDestinationFolder, File originalGroupNameMappingFile) throws IOException {
     IMavenProjectFacade facade = getMavenProjectFacade();
     if (!"war".equals(facade.getPackaging())) {
       // Not a war project, we don't know how to customize that
@@ -203,28 +209,31 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     Xpp3Dom customConfiguration = new Xpp3Dom("configuration");
     Xpp3DomUtils.mergeXpp3Dom(customConfiguration, originalConfiguration);
 
-    customizeFolder(originalDestinationFolder, webResourcesFolder,
+    customizeLocation(originalDestinationFolder, webResourcesFolder,
         defaultOutputPathPrefix, customConfiguration, DESTINATION_FOLDER);
 
-    customizeFolder(originalJsDestinationFolder, webResourcesFolder,
+    customizeLocation(originalJsDestinationFolder, webResourcesFolder,
         defaultOutputPathPrefix, customConfiguration, JS_DESTINATION_FOLDER);
 
-    customizeFolder(originalCssDestinationFolder, webResourcesFolder,
+    customizeLocation(originalCssDestinationFolder, webResourcesFolder,
         defaultOutputPathPrefix, customConfiguration, CSS_DESTINATION_FOLDER);
+
+    customizeLocation(originalGroupNameMappingFile, webResourcesFolder,
+            defaultOutputPathPrefix, customConfiguration, GROUP_NAME_MAPPING_FILE);
 
     return customConfiguration;
   }
 
-  private void customizeFolder(File originalDestinationFolder,
+  private void customizeLocation(File originalDestinationFolder,
       IFolder webResourcesFolder, IPath defaultOutputPathPrefix,
-      Xpp3Dom configuration, String folderParameterName) throws IOException {
+      Xpp3Dom configuration, String parameterName) throws IOException {
 
     if (originalDestinationFolder != null) {
       IPath customPath = getReplacementPath(originalDestinationFolder, webResourcesFolder, defaultOutputPathPrefix);
       if (customPath != null) {
-        Xpp3Dom dom = configuration.getChild(folderParameterName);
+        Xpp3Dom dom = configuration.getChild(parameterName);
         if (dom == null) {
-          dom = new Xpp3Dom(folderParameterName);
+          dom = new Xpp3Dom(parameterName);
           configuration.addChild(dom);
         }
         dom.setValue(customPath.toOSString());
