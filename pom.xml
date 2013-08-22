@@ -26,6 +26,9 @@
     <test.timeout>600</test.timeout><!--  10 mins -->       
     <tycho.test.jvmArgs>-Xmx512m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
   </properties>
+  <properties>
+		<tycho.scmUrl>scm:git:https://github.com/jbosstools/m2e-wro4j.git</tycho.scmUrl>
+	</properties>
 
   <modules>
     <module>org.jboss.tools.m2e.wro4j.core</module>  
