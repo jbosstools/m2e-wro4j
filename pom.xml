@@ -23,8 +23,10 @@
   <name>M2E connector for WRO4J :: Parent </name>
   <properties>
     <tycho-version>0.20.0</tycho-version>
+    <tycho-extras-version>${tycho-version}</tycho-extras-version>
     <test.timeout>600</test.timeout><!--  10 mins -->       
     <tycho.test.jvmArgs>-Xmx512m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
+    <tycho.scmUrl>scm:git:https://github.com/jbosstools/m2e-wro4j.git</tycho.scmUrl>
   </properties>
 
   <modules>
@@ -75,7 +77,7 @@
         <version>${tycho-version}</version>
         <configuration>
           <resolver>p2</resolver>
-          <ignoreTychoRepositories>true</ignoreTychoRepositories>
+          <ignoreTychoRepositories>false</ignoreTychoRepositories>
         </configuration>
       </plugin>
     </plugins>
@@ -105,6 +107,25 @@
           <artifactId>maven-resources-plugin</artifactId>
           <version>2.6</version>
         </plugin>
+        
+
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-packaging-plugin</artifactId>
+          <version>${tycho-version}</version>
+          <configuration>
+            <sourceReferences>
+              <generate>true</generate>
+            </sourceReferences>
+         </configuration>
+         <dependencies>
+           <dependency>
+             <groupId>org.eclipse.tycho.extras</groupId>
+             <artifactId>tycho-sourceref-jgit</artifactId>
+             <version>${tycho-extras-version}</version>
+           </dependency>
+         </dependencies>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -113,10 +134,9 @@
     <profile>
       <id>osx</id>
       <activation>
-        <property>
-          <name>java.vendor.url</name>
-          <value>http://www.apple.com/</value>
-        </property>
+        <os>
+          <family>mac</family>
+        </os>
       </activation>
       <properties>
         <tycho.test.jvmArgs>-Xmx800m -XX:MaxPermSize=256m -XstartOnFirstThread</tycho.test.jvmArgs>
