@@ -22,7 +22,7 @@
   <packaging>pom</packaging>
   <name>M2E connector for WRO4J :: Parent </name>
   <properties>
-    <tycho-version>0.15.0</tycho-version>
+    <tycho-version>0.18.1</tycho-version>
     <test.timeout>600</test.timeout><!--  10 mins -->       
     <tycho.test.jvmArgs>-Xmx512m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
   </properties>
@@ -42,9 +42,9 @@
     </repository>
 
     <repository>
-      <id>helios</id>
+      <id>kepler</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/releases/indigo</url>
+      <url>http://download.eclipse.org/releases/kepler</url>
     </repository>
 
     <repository>
@@ -52,11 +52,10 @@
       <layout>p2</layout>
       <url>http://download.eclipse.org/technology/m2e/releases/</url>
     </repository>
-    
     <repository>
       <id>m2e-wtp</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/m2e-wtp/milestones/0.16.0/</url>
+      <url>http://download.eclipse.org/m2e-wtp/releases/kepler/1.0.0/</url>
     </repository>
         
   </repositories>
