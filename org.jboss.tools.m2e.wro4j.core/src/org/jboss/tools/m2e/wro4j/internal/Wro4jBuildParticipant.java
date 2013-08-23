@@ -196,13 +196,14 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
       return originalConfiguration;
     }
 
-    IFolder webResourcesFolder = project.getFolder(relativeTargetPath.append("m2e-wtp"));
-    if (!webResourcesFolder.exists()) {
+    IFolder m2eWtpFolder = project.getFolder(relativeTargetPath.append("m2e-wtp"));
+     
+    if (!m2eWtpFolder.exists()) {
       // Not a m2e-wtp project, we don't know how to customize either
       // TODO Try to support Sonatype's webby instead?
       return originalConfiguration;
     }
-    webResourcesFolder = project.getFolder(relativeTargetPath.append("m2e-wtp").append("web-resources"));
+    IFolder webResourcesFolder = m2eWtpFolder.getFolder("web-resources");
 
     IPath fullTargetPath = new Path(target);
     IPath defaultOutputPathPrefix = fullTargetPath.append(facade.getMavenProject().getBuild().getFinalName());
@@ -259,4 +260,5 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     return IncrementalProjectBuilder.FULL_BUILD != kind
         && IncrementalProjectBuilder.CLEAN_BUILD != kind;
   }
+  
 }

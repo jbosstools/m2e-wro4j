@@ -18,6 +18,15 @@ public class Wro4jProjectconfiguratorTest extends AbstractMavenProjectTestCase {
     assertTrue("testCase.js is missing", js.exists());
     IFile css = p.getFile("target/m2e-wtp/web-resources/resources/testCase.css");
     assertTrue("testCase.css is missing", css.exists());
+
+    p.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+    p.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+    waitForJobsToComplete();
+    
+    js = p.getFile("target/m2e-wtp/web-resources/resources/testCase.js");
+    assertTrue("testCase.js is missing after a clean build", js.exists());
+    css = p.getFile("target/m2e-wtp/web-resources/resources/testCase.css");
+    assertTrue("testCase.css is missing after a clean build", css.exists());
   }
 
   public void testM2eWtpGroupNameMappingFileSupport() throws Exception {
