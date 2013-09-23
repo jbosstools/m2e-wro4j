@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>foo.bar</groupId>
-	<artifactId>p2</artifactId>
+	<artifactId>p3</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<build>
@@ -20,9 +20,10 @@
 					</execution>
 				</executions>  
 				<configuration>
+				    <minimize>true</minimize>
 					<destinationFolder>${project.build.directory}/${project.build.finalName}/resources</destinationFolder>
-					<groupNameMappingFile>${project.build.directory}/${project.build.finalName}/resources/mapping.txt</groupNameMappingFile>
-                </configuration>
+					<targetGroups>testCase</targetGroups>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

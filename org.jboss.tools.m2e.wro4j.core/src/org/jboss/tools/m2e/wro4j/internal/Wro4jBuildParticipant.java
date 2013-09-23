@@ -10,7 +10,7 @@ package org.jboss.tools.m2e.wro4j.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.String;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,11 +29,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.IMaven;
+import org.eclipse.m2e.core.internal.builder.EclipseBuildContext;
+import org.eclipse.m2e.core.internal.builder.MavenBuilderImpl;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.MavenProjectUtils;
 import org.eclipse.m2e.core.project.configurator.MojoExecutionBuildParticipant;
 import org.eclipse.osgi.util.NLS;
 import org.sonatype.plexus.build.incremental.BuildContext;
+import org.sonatype.plexus.build.incremental.ThreadBuildContext;
 
 public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 
@@ -46,10 +49,13 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
   private static final String JS_DESTINATION_FOLDER = "jsDestinationFolder";
   private static final String GROUP_NAME_MAPPING_FILE = "groupNameMappingFile";
 
+  private BuildContext currentBuildContext;
+
   public Wro4jBuildParticipant(MojoExecution execution) {
     super(execution, true);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Set<IProject> build(int kind, IProgressMonitor monitor)
       throws Exception {
@@ -59,10 +65,24 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
       return null;
     }
 
-    BuildContext buildContext = getBuildContext();
-    if (notCleanFullBuild(kind)
-        && !wroResourceChangeDetected(mojoExecution, buildContext)) {
-      return null;
+    BuildContext originalBuildContext = super.getBuildContext();
+    currentBuildContext = originalBuildContext;
+    if (notCleanFullBuild(kind)) {
+    	
+	    // check if any of the web resource files changed
+	    File source = getLocation(mojoExecution, "contextFolder");
+	    // TODO also analyze output classes folders as wro4j can use classpath files
+	    Scanner ds = currentBuildContext.newScanner(source); // delta or full scanner
+	    ds.scan();
+	    String[] includedFiles = ds.getIncludedFiles();
+    	if (isPomModified() || interestingFileChangeDetected(includedFiles, WRO4J_FILES_PATTERN)) {
+    		//treat as new full build as wro4j only checks for classic resources changes during    incremental builds
+    		IProject project = getMavenProjectFacade().getProject();
+    		Map<String, Object> contextMap = (Map<String, Object>) project.getSessionProperty(MavenBuilderImpl.BUILD_CONTEXT_KEY);
+			currentBuildContext = new EclipseBuildContext(project, contextMap);
+    	} else if (!interestingFileChangeDetected(includedFiles, WEB_RESOURCES_PATTERN)) {
+    		return null;
+    	}
     }
 
     Xpp3Dom originalConfiguration = mojoExecution.getConfiguration();
@@ -90,14 +110,17 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     	  monitor.setTaskName(taskName);
       }
       // execute mojo
+      ThreadBuildContext.setThreadBuildContext(currentBuildContext);
+
       result = super.build(kind, monitor);
 
-      // tell m2e builder to refresh generated resources
-      refreshWorkspace(mojoExecution, buildContext);
+      // tell m2e builder to refresh generated resources on original build context
+      refreshWorkspace(mojoExecution, originalBuildContext);
 
     } finally {
       // restore original configuration
       mojoExecution.setConfiguration(originalConfiguration);
+      ThreadBuildContext.setThreadBuildContext(originalBuildContext);
     }
 
     return result;
@@ -110,46 +133,22 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     return location;
   }
 
-  private boolean wroResourceChangeDetected(MojoExecution mojoExecution,
-      BuildContext buildContext) throws CoreException {
-
-    // If the pom file changed, we force wro4j's invocation
-    if (isPomModified()) {
-      return true;
+  private boolean interestingFileChangeDetected(String[] includedFiles, Pattern pattern) throws CoreException {
+    if (includedFiles == null || includedFiles.length == 0) {
+    	return false;
     }
-
-    // check if any of the web resource files changed
-    File source = getLocation(mojoExecution, "contextFolder");
-    // TODO also analyze output classes folders as wro4j can use classpath files
-    Scanner ds = buildContext.newScanner(source); // delta or full scanner
-    ds.scan();
-    String[] includedFiles = ds.getIncludedFiles();
-    if (includedFiles == null || includedFiles.length <= 0) {
-      return false;
-    }
-
-    // Quick'n dirty trick to avoid calling wro4j for ANY file change
-    // Let's restrict ourselves to a few known extensions
     for (String file : includedFiles) {
       String portableFile = file.replace('\\', '/');
-      //use 2 matchers only to improve readability	
-      Matcher m = WRO4J_FILES_PATTERN.matcher(portableFile);
+      Matcher m = pattern.matcher(portableFile);
       if (m.matches()) {
     	  return true;
       }
-
-      m = WEB_RESOURCES_PATTERN.matcher(portableFile);
-      if (m.matches()) {
-        return true;
-      }
     }
 
-    // TODO analyze wro.xml for file patterns,
-    // check if includedFiles match wro4j-maven-plugin's select targetGroups
-    // filePatterns
     return false;
   }
 
+    
   private boolean isPomModified() {
     IMavenProjectFacade facade = getMavenProjectFacade();
     IResourceDelta delta = getDelta(facade.getProject());
