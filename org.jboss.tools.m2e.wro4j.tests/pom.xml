@@ -18,4 +18,5 @@
   <artifactId>org.jboss.tools.m2e.wro4j.tests</artifactId>
   <packaging>eclipse-test-plugin</packaging>
   <name>M2E connector for WRO4J :: Tests </name>
-</project>
+  
+  </project>

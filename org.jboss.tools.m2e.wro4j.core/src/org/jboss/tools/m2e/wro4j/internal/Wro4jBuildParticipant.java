@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Red Hat, Inc.
+ * Copyright (c) 2012-2013 Red Hat, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,10 @@ package org.jboss.tools.m2e.wro4j.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -38,8 +42,17 @@ import org.eclipse.osgi.util.NLS;
 import org.sonatype.plexus.build.incremental.BuildContext;
 import org.sonatype.plexus.build.incremental.ThreadBuildContext;
 
+/**
+ * m2e build participant for wro4j-maven-plugin
+ * 
+ * @author Fred Bricon
+ */
 public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 
+  private static final String CONTEXT_FOLDER = "contextFolder";
+
+  private static final String TOKEN_SEPARATOR = ",\\s*";
+	
   private static final Pattern WRO4J_FILES_PATTERN = Pattern.compile("^(\\/?.*\\/)?wro\\.(xml|groovy|properties)$");
 	
   private static final Pattern WEB_RESOURCES_PATTERN = Pattern.compile("([^\\s]+(\\.(?i)(js|css|scss|sass|less|coffee|json|template))$)");
@@ -67,14 +80,16 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 
     BuildContext originalBuildContext = super.getBuildContext();
     currentBuildContext = originalBuildContext;
+    Collection<File> sources = getContextRoots(getMavenProjectFacade(), mojoExecution);
     if (notCleanFullBuild(kind)) {
-    	
+    	Collection<String> includedFiles = new ArrayList<String>();
 	    // check if any of the web resource files changed
-	    File source = getLocation(mojoExecution, "contextFolder");
-	    // TODO also analyze output classes folders as wro4j can use classpath files
-	    Scanner ds = currentBuildContext.newScanner(source); // delta or full scanner
-	    ds.scan();
-	    String[] includedFiles = ds.getIncludedFiles();
+	    for (File source : sources){
+	    	// TODO also analyze output classes folders as wro4j can use classpath files
+	    	Scanner ds = currentBuildContext.newScanner(source); // delta or full scanner
+	    	ds.scan();
+	    	includedFiles.addAll(Arrays.asList(ds.getIncludedFiles()));
+	    }
     	if (isPomModified() || interestingFileChangeDetected(includedFiles, WRO4J_FILES_PATTERN)) {
     		//treat as new full build as wro4j only checks for classic resources changes during    incremental builds
     		IProject project = getMavenProjectFacade().getProject();
@@ -96,6 +111,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
       File groupNameMappingFile = getLocation(mojoExecution, GROUP_NAME_MAPPING_FILE);
 
       Xpp3Dom customConfiguration = customize(originalConfiguration, 
+    		                                  sources,
                                               destinationFolder, 
                                               jsDestinationFolder, 
                                               cssDestinationFolder,
@@ -126,6 +142,36 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     return result;
   }
 
+  private Collection<File> getContextRoots(IMavenProjectFacade facade, MojoExecution mojoExecution)
+      throws CoreException {
+	
+    IMaven maven = MavenPlugin.getMaven();
+    String contextRoots = maven.getMojoParameterValue(getSession(), mojoExecution, CONTEXT_FOLDER, String.class);
+	List<File> locations = new ArrayList<File>();
+    if (contextRoots != null) {
+    	String[] crs = contextRoots.split(TOKEN_SEPARATOR);
+    	IPath root = facade.getProject().getLocation();
+    	for (String cr : crs) {
+    		String location = cr.trim();
+    		if (!location.isEmpty()) {
+    			File l = new File(location);
+	    		if (l.isAbsolute()) {
+	    			locations.add(l);
+	    		} else {
+					locations.add(root.append(location).toFile());
+	    		}
+	    		
+    			
+    		}
+    	}; 
+    }
+    if (locations.isEmpty()) {
+    	locations.add(new File("src/main/webapp"));
+    }
+    return locations;
+  }
+
+
   private File getLocation(MojoExecution mojoExecution, String parameterName)
       throws CoreException {
     IMaven maven = MavenPlugin.getMaven();
@@ -133,8 +179,10 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     return location;
   }
 
-  private boolean interestingFileChangeDetected(String[] includedFiles, Pattern pattern) throws CoreException {
-    if (includedFiles == null || includedFiles.length == 0) {
+
+  
+  private boolean interestingFileChangeDetected(Collection<String> includedFiles, Pattern pattern) throws CoreException {
+    if (includedFiles == null || includedFiles.isEmpty()) {
     	return false;
     }
     for (String file : includedFiles) {
@@ -178,7 +226,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     }
   }
 
-  private Xpp3Dom customize(Xpp3Dom originalConfiguration,
+  private Xpp3Dom customize(Xpp3Dom originalConfiguration, Collection<File> contextFolders,
       File originalDestinationFolder, File originalJsDestinationFolder,
       File originalCssDestinationFolder, File originalGroupNameMappingFile) throws IOException {
     IMavenProjectFacade facade = getMavenProjectFacade();
@@ -186,13 +234,15 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
       // Not a war project, we don't know how to customize that
       return originalConfiguration;
     }
+    Xpp3Dom customConfiguration = new Xpp3Dom("configuration");
+    Xpp3DomUtils.mergeXpp3Dom(customConfiguration, originalConfiguration);
 
     IProject project = facade.getProject();
     String target = facade.getMavenProject().getBuild().getDirectory();
     IPath relativeTargetPath = MavenProjectUtils.getProjectRelativePath(project, target);
     if (relativeTargetPath == null) {
       // target folder not under the project directory, we bail
-      return originalConfiguration;
+      return customConfiguration;
     }
 
     IFolder m2eWtpFolder = project.getFolder(relativeTargetPath.append("m2e-wtp"));
@@ -200,15 +250,14 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     if (!m2eWtpFolder.exists()) {
       // Not a m2e-wtp project, we don't know how to customize either
       // TODO Try to support Sonatype's webby instead?
-      return originalConfiguration;
+      return customConfiguration;
     }
     IFolder webResourcesFolder = m2eWtpFolder.getFolder("web-resources");
 
     IPath fullTargetPath = new Path(target);
     IPath defaultOutputPathPrefix = fullTargetPath.append(facade.getMavenProject().getBuild().getFinalName());
 
-    Xpp3Dom customConfiguration = new Xpp3Dom("configuration");
-    Xpp3DomUtils.mergeXpp3Dom(customConfiguration, originalConfiguration);
+    fixContextFolders(customConfiguration, contextFolders);
 
     customizeLocation(originalDestinationFolder, webResourcesFolder,
         defaultOutputPathPrefix, customConfiguration, DESTINATION_FOLDER);
@@ -242,6 +291,27 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     }
   }
 
+  private void fixContextFolders(Xpp3Dom configuration, Collection<File> contextFolders) throws IOException {
+	    if (contextFolders == null || contextFolders.isEmpty()) {
+	    	return;
+	    }
+	    StringBuilder customContextFolders = new StringBuilder();
+	    boolean addComma = false;
+	    for(File folder : contextFolders) {
+	    	if (addComma) {
+	    		customContextFolders.append(", ");
+	    	}
+	    	customContextFolders.append(folder.getAbsolutePath().replace('\\', '/'));
+	    	addComma = true;
+	    }
+	    Xpp3Dom dom = configuration.getChild(CONTEXT_FOLDER);
+	    if (dom == null) {
+	       dom = new Xpp3Dom(CONTEXT_FOLDER);
+	       configuration.addChild(dom);
+	    }
+	    dom.setValue(customContextFolders.toString());
+	  }
+  
   private IPath getReplacementPath(File originalFolder, IFolder webResourcesFolder, IPath defaultOutputPathPrefix)
       throws IOException {
     IPath originalDestinationFolderPath = Path.fromOSString(originalFolder.getCanonicalPath());

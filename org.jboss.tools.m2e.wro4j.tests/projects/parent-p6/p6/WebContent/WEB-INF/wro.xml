@@ -1,0 +1,9 @@
+<groups xmlns="http://www.isdc.ro/wro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.isdc.ro/wro wro.xsd">
+	<group name="testCase">
+		<css>/style1.css</css>
+		<css>/style2.css</css>
+		<js>/some.js</js>
+		<js>/another.js</js>
+	</group>
+</groups>
