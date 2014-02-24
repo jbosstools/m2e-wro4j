@@ -82,6 +82,11 @@ public class Wro4jProjectconfiguratorTest extends AbstractMavenProjectTestCase {
 		basicTest(p);
 	}	
 
+	public void testContextFolder173() throws Exception {
+		IProject p = importProject("projects/p4-173/pom.xml");
+		waitForJobsToComplete();
+		basicTest(p);
+	}	
 
 	public void testMultipleContextFolders() throws Exception {
 		IProject p = importProject("projects/p5/pom.xml");
