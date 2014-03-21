@@ -13,9 +13,11 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
 
@@ -148,6 +150,7 @@ public class Wro4jProjectconfiguratorTest extends AbstractMavenProjectTestCase {
 		InputStream ins = null;
 		String content = null;
 		try {
+			file.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
 			ins = file.getContents();
 			content = IOUtils.toString(ins).replaceAll("\r\n", "\n");
 		} finally {
