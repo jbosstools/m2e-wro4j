@@ -18,11 +18,11 @@
 
   <groupId>org.jboss.tools.m2e.wro4j</groupId>
   <artifactId>org.jboss.tools.m2e.wro4j.parent</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>M2E connector for WRO4J :: Parent </name>
   <properties>
-    <tycho-version>0.19.0</tycho-version>
+    <tycho-version>0.20.0</tycho-version>
     <test.timeout>600</test.timeout><!--  10 mins -->       
     <tycho.test.jvmArgs>-Xmx512m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
   </properties>
@@ -50,7 +50,7 @@
     <repository>
       <id>m2e</id>
       <layout>p2</layout>
-      <url>http://download.eclipse.org/technology/m2e/releases/</url>
+      <url>http://download.eclipse.org/technology/m2e/milestones/1.5</url>
     </repository>
     <repository>
       <id>m2e-wtp</id>
