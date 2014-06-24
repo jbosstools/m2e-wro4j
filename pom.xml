@@ -28,6 +28,9 @@
     <tycho.test.jvmArgs>-Xmx512m -XX:MaxPermSize=256m</tycho.test.jvmArgs>
     <tycho.scmUrl>scm:git:https://github.com/jbosstools/m2e-wro4j.git</tycho.scmUrl>
   </properties>
+  <properties>
+		<tycho.scmUrl>scm:git:https://github.com/jbosstools/m2e-wro4j.git</tycho.scmUrl>
+	</properties>
 
   <modules>
     <module>org.jboss.tools.m2e.wro4j.core</module>  
