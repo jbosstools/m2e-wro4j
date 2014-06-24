@@ -59,7 +59,10 @@
       <layout>p2</layout>
       <url>http://download.eclipse.org/m2e-wtp/releases/kepler/1.0.0/</url>
     </repository>
-        
+    <repository>
+      <id>orbit</id>
+      <url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</url>
+    </repository>
   </repositories>
 
   <build>
