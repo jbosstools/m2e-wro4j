@@ -10,11 +10,11 @@ package org.jboss.tools.m2e.wro4j.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,8 +33,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.IMaven;
-import org.eclipse.m2e.core.internal.builder.MavenBuilderImpl;
-import org.eclipse.m2e.core.internal.builder.plexusbuildapi.EclipseBuildContext;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
 import org.eclipse.m2e.core.project.MavenProjectUtils;
 import org.eclipse.m2e.core.project.configurator.MojoExecutionBuildParticipant;
@@ -93,8 +91,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     	if (isPomModified() || interestingFileChangeDetected(includedFiles, WRO4J_FILES_PATTERN)) {
     		//treat as new full build as wro4j only checks for classic resources changes during    incremental builds
     		IProject project = getMavenProjectFacade().getProject();
-    		Map<String, Object> contextMap = (Map<String, Object>) project.getSessionProperty(MavenBuilderImpl.BUILD_CONTEXT_KEY);
-			currentBuildContext = new EclipseBuildContext(project, contextMap);
+			currentBuildContext = new CleanBuildContext(originalBuildContext);
     	} else if (!interestingFileChangeDetected(includedFiles, WEB_RESOURCES_PATTERN)) {
     		return null;
     	}
@@ -330,4 +327,81 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
         && IncrementalProjectBuilder.CLEAN_BUILD != kind;
   }
   
+  private static class CleanBuildContext implements BuildContext {
+
+	private BuildContext originalContext;
+
+	CleanBuildContext(BuildContext originalContext) {
+		this.originalContext = originalContext;
+	}
+	  
+	public boolean hasDelta(String relpath) {
+		return true;
+	}
+
+	public boolean hasDelta(File file) {
+		return true;
+	}
+
+	public boolean hasDelta(List relpaths) {
+		return true;
+	}
+
+	public void refresh(File file) {
+		originalContext.refresh(file);
+	}
+
+	public OutputStream newFileOutputStream(File file) throws IOException {
+		return originalContext.newFileOutputStream(file);
+	}
+
+	public Scanner newScanner(File basedir) {
+		return originalContext.newScanner(basedir);
+	}
+
+	public Scanner newDeleteScanner(File basedir) {
+		return originalContext.newDeleteScanner(basedir);
+	}
+
+	public Scanner newScanner(File basedir, boolean ignoreDelta) {
+		return originalContext.newScanner(basedir, ignoreDelta);
+	}
+
+	public boolean isIncremental() {
+		return false;
+	}
+
+	public void setValue(String key, Object value) {
+		originalContext.setValue(key, value);
+	}
+
+	public Object getValue(String key) {
+		return originalContext.getValue(key);
+	}
+
+	public void addWarning(File file, int line, int column, String message,
+			Throwable cause) {
+		originalContext.addWarning(file, line, column, message, cause);
+	}
+
+	public void addError(File file, int line, int column, String message,
+			Throwable cause) {
+		originalContext.addError(file, line, column, message, cause);
+	}
+
+	public void addMessage(File file, int line, int column, String message,
+			int severity, Throwable cause) {
+		originalContext.addMessage(file, line, column, message, severity, cause);
+	}
+
+	public void removeMessages(File file) {
+		originalContext.removeMessages(file);
+	}
+
+	public boolean isUptodate(File target, File source) {
+		return false;
+	}
+
+  }
+
 }

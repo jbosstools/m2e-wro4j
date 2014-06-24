@@ -5,4 +5,4 @@ Bundle-SymbolicName: org.jboss.tools.m2e.wro4j.ui;singleton:=true
 Bundle-Version: 1.1.0.qualifier
 Bundle-Vendor: Red Hat, Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6, JavaSE-1.7
-Require-Bundle: org.eclipse.m2e.editor.xml;bundle-version="[1.5.0,2.0.0)"
+Require-Bundle: org.eclipse.m2e.editor.xml;bundle-version="[1.4.0,2.0.0)"
