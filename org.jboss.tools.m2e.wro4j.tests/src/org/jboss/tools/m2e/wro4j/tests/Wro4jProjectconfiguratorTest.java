@@ -84,8 +84,8 @@ public class Wro4jProjectconfiguratorTest extends AbstractMavenProjectTestCase {
 		basicTest(p);
 	}	
 
-	public void testContextFolder173() throws Exception {
-		IProject p = importProject("projects/p4-173/pom.xml");
+	public void testContextFolder176() throws Exception {
+		IProject p = importProject("projects/p4-176/pom.xml");
 		waitForJobsToComplete();
 		basicTest(p);
 	}	
@@ -101,6 +101,31 @@ public class Wro4jProjectconfiguratorTest extends AbstractMavenProjectTestCase {
 		waitForJobsToComplete();
 		basicTest(projects[1]);
 	}
+
+	public void testDisableM2eWtpIntegration() throws Exception {
+		IProject p = importProject("projects/p7/pom.xml");
+		waitForJobsToComplete();
+
+		p.build(IncrementalProjectBuilder.AUTO_BUILD, monitor);
+		waitForJobsToComplete();
+
+		IFile js = p
+				.getFile("target/m2e-wtp/web-resources/resources/testCase.js");
+		assertFalse(js + " should be missing", js.exists());
+		
+		js = p
+				.getFile("target/disable-wtp-0.0.1-SNAPSHOT/resources/testCase.js");
+		assertTrue(js + " is missing", js.exists());
+		
+		
+		IFile css = p
+				.getFile("target/m2e-wtp/web-resources/resources/testCase.css");
+		assertFalse("target/m2e-wtp/web-resources/resources/testCase.css should be missing", css.exists());
+
+		css = p
+				.getFile("target/disable-wtp-0.0.1-SNAPSHOT/resources/testCase.css");
+		assertTrue(css + " is missing", css.exists());
+    }
 
 	private void assertMinifiedFiles(IProject p) throws Exception {
 		IFile js = p.getFile("target/m2e-wtp/web-resources/resources/testCase.js");

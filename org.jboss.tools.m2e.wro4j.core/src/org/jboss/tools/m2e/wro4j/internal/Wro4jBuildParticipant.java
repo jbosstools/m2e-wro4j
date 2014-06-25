@@ -15,11 +15,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.maven.plugin.MojoExecution;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.Scanner;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomUtils;
@@ -30,6 +32,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.IMaven;
@@ -46,6 +49,8 @@ import org.sonatype.plexus.build.incremental.ThreadBuildContext;
  * @author Fred Bricon
  */
 public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
+
+  private static final String M2E_WRO4J_WTP_INTEGRATION_KEY = "m2e.wro4j.wtp.integration";
 
   private static final String CONTEXT_FOLDER = "contextFolder";
 
@@ -225,7 +230,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 
   private Xpp3Dom customize(Xpp3Dom originalConfiguration, Collection<File> contextFolders,
       File originalDestinationFolder, File originalJsDestinationFolder,
-      File originalCssDestinationFolder, File originalGroupNameMappingFile) throws IOException {
+      File originalCssDestinationFolder, File originalGroupNameMappingFile) throws IOException, CoreException {
     IMavenProjectFacade facade = getMavenProjectFacade();
     if (!"war".equals(facade.getPackaging())) {
       // Not a war project, we don't know how to customize that
@@ -244,7 +249,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 
     IFolder m2eWtpFolder = project.getFolder(relativeTargetPath.append("m2e-wtp"));
      
-    if (!m2eWtpFolder.exists()) {
+    if (!m2eWtpFolder.exists() || isWtpIntegrationDisabled(facade.getMavenProject(new NullProgressMonitor()))) {
       // Not a m2e-wtp project, we don't know how to customize either
       // TODO Try to support Sonatype's webby instead?
       return customConfiguration;
@@ -269,6 +274,12 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
             defaultOutputPathPrefix, customConfiguration, GROUP_NAME_MAPPING_FILE);
 
     return customConfiguration;
+  }
+
+  private boolean isWtpIntegrationDisabled(MavenProject mavenProject) {
+	Properties properties = mavenProject.getProperties();
+	String isWtpIntegrationProperty = properties.getProperty(M2E_WRO4J_WTP_INTEGRATION_KEY, Boolean.TRUE.toString());
+	return !Boolean.parseBoolean(isWtpIntegrationProperty);
   }
 
   private void customizeLocation(File originalDestinationFolder,

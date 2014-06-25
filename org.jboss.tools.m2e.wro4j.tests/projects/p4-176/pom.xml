@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>foo.bar</groupId>
-	<artifactId>p4-171</artifactId>
+	<artifactId>p4-176</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<properties>
@@ -13,7 +13,7 @@
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
-				<version>1.7.3</version>
+				<version>1.7.6</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
