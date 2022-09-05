@@ -83,7 +83,8 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 
     BuildContext originalBuildContext = super.getBuildContext();
     currentBuildContext = originalBuildContext;
-    Collection<File> sources = getContextRoots(getMavenProjectFacade(), mojoExecution);
+    IMavenProjectFacade facade = getMavenProjectFacade();
+    Collection<File> sources = getContextRoots(facade, mojoExecution, monitor);
     if (notCleanFullBuild(kind)) {
     	Collection<String> includedFiles = new ArrayList<String>();
 	    // check if any of the web resource files changed
@@ -95,7 +96,6 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 	    }
     	if (isPomModified() || interestingFileChangeDetected(includedFiles, WRO4J_FILES_PATTERN)) {
     		//treat as new full build as wro4j only checks for classic resources changes during    incremental builds
-    		IProject project = getMavenProjectFacade().getProject();
 			currentBuildContext = new CleanBuildContext(originalBuildContext);
     	} else if (!interestingFileChangeDetected(includedFiles, WEB_RESOURCES_PATTERN)) {
     		return null;
@@ -106,11 +106,11 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
 
     Set<IProject> result = null;
     try {
-
-      File destinationFolder = getLocation(mojoExecution, DESTINATION_FOLDER);
-      File jsDestinationFolder = getLocation(mojoExecution, JS_DESTINATION_FOLDER);
-      File cssDestinationFolder = getLocation(mojoExecution, CSS_DESTINATION_FOLDER);
-      File groupNameMappingFile = getLocation(mojoExecution, GROUP_NAME_MAPPING_FILE);
+      MavenProject mavenProject = facade.getMavenProject(monitor);
+      File destinationFolder = getLocation(mavenProject, mojoExecution, DESTINATION_FOLDER, monitor);
+      File jsDestinationFolder = getLocation(mavenProject, mojoExecution, JS_DESTINATION_FOLDER, monitor);
+      File cssDestinationFolder = getLocation(mavenProject, mojoExecution, CSS_DESTINATION_FOLDER, monitor);
+      File groupNameMappingFile = getLocation(mavenProject, mojoExecution, GROUP_NAME_MAPPING_FILE, monitor);
 
       Xpp3Dom customConfiguration = customize(originalConfiguration, 
     		                                  sources,
@@ -133,7 +133,7 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
       result = super.build(kind, monitor);
 
       // tell m2e builder to refresh generated resources on original build context
-      refreshWorkspace(mojoExecution, originalBuildContext);
+      refreshWorkspace(mavenProject, mojoExecution, originalBuildContext, monitor);
 
     } finally {
       // restore original configuration
@@ -144,11 +144,11 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     return result;
   }
 
-  private Collection<File> getContextRoots(IMavenProjectFacade facade, MojoExecution mojoExecution)
+  private Collection<File> getContextRoots(IMavenProjectFacade facade, MojoExecution mojoExecution, IProgressMonitor monitor)
       throws CoreException {
 	
     IMaven maven = MavenPlugin.getMaven();
-    String contextRoots = maven.getMojoParameterValue(getSession(), mojoExecution, CONTEXT_FOLDER, String.class);
+    String contextRoots = maven.getMojoParameterValue(facade.getMavenProject(monitor), mojoExecution, CONTEXT_FOLDER, String.class, monitor);
 	List<File> locations = new ArrayList<File>();
     if (contextRoots != null) {
     	String[] crs = contextRoots.split(TOKEN_SEPARATOR);
@@ -174,10 +174,10 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
   }
 
 
-  private File getLocation(MojoExecution mojoExecution, String parameterName)
+  private File getLocation(MavenProject mavenProject, MojoExecution mojoExecution, String parameterName, IProgressMonitor monitor)
       throws CoreException {
     IMaven maven = MavenPlugin.getMaven();
-    File location = maven.getMojoParameterValue(getSession(), mojoExecution, parameterName, File.class);
+    File location = maven.getMojoParameterValue(mavenProject, mojoExecution, parameterName, File.class, monitor);
     return location;
   }
 
@@ -212,17 +212,15 @@ public class Wro4jBuildParticipant extends MojoExecutionBuildParticipant {
     return false;
   }
 
-  private void refreshWorkspace(MojoExecution mojoExecution,
-      BuildContext buildContext) throws CoreException {
-    refreshResource(mojoExecution, buildContext, DESTINATION_FOLDER);
-    refreshResource(mojoExecution, buildContext, CSS_DESTINATION_FOLDER);
-    refreshResource(mojoExecution, buildContext, JS_DESTINATION_FOLDER);
-    refreshResource(mojoExecution, buildContext, GROUP_NAME_MAPPING_FILE);
+  private void refreshWorkspace(MavenProject mavenProject, MojoExecution mojoExecution, BuildContext buildContext, IProgressMonitor monitor) throws CoreException {
+    refreshResource(mavenProject, mojoExecution, buildContext, DESTINATION_FOLDER, monitor);
+    refreshResource(mavenProject, mojoExecution, buildContext, CSS_DESTINATION_FOLDER, monitor);
+    refreshResource(mavenProject, mojoExecution, buildContext, JS_DESTINATION_FOLDER, monitor);
+    refreshResource(mavenProject, mojoExecution, buildContext, GROUP_NAME_MAPPING_FILE, monitor);
   }
 
-  private void refreshResource(MojoExecution mojoExecution,
-      BuildContext buildContext, String parameterName) throws CoreException {
-    File location = getLocation(mojoExecution, parameterName);
+  private void refreshResource(MavenProject mavenProject, MojoExecution mojoExecution, BuildContext buildContext, String parameterName, IProgressMonitor monitor) throws CoreException {
+    File location = getLocation(mavenProject, mojoExecution, parameterName, monitor);
     if (location != null && location.exists()) {
       buildContext.refresh(location);
     }

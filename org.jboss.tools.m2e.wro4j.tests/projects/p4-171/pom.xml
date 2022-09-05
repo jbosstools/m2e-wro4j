@@ -13,7 +13,7 @@
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
-				<version>1.7.1</version>
+				<version>1.9.0</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
@@ -25,6 +25,7 @@
 				<configuration>
 					<contextFolder>${web.content}</contextFolder>
 					<wroFile>${web.content}/WEB-INF/wro.xml</wroFile>
+					<extraConfigFile>${web.content}/WEB-INF/wro.properties</extraConfigFile>
 					<destinationFolder>${project.build.directory}/${project.build.finalName}/resources</destinationFolder>
 					<targetGroups>testCase</targetGroups>
 				</configuration>
@@ -32,17 +33,15 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
+				<version>3.3.2</version>
 				<configuration>
-					<!-- web.xml is not mandatory since JavaEE 5 -->
-					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.10.1</version>
 				<configuration>
 					<target>1.6</target>
 					<source>1.6</source>

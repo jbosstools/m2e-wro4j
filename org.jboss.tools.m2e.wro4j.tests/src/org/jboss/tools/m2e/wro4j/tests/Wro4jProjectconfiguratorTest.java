@@ -7,9 +7,9 @@
  *******************************************************************************/
 package org.jboss.tools.m2e.wro4j.tests;
 
+import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -20,15 +20,18 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.m2e.tests.common.AbstractMavenProjectTestCase;
+import org.junit.Test;
 
 public class Wro4jProjectconfiguratorTest extends AbstractMavenProjectTestCase {
 
+	@Test
 	public void testM2eWtpDestinationFolderSupport() throws Exception {
 		IProject p = importProject("projects/p1/pom.xml");
 		waitForJobsToComplete();
 		basicTest(p);
 	}
 
+	@Test
 	public void testM2eWtpGroupNameMappingFileSupport() throws Exception {
 		IProject p = importProject("projects/p2/pom.xml");
 		waitForJobsToComplete();
@@ -44,6 +47,7 @@ public class Wro4jProjectconfiguratorTest extends AbstractMavenProjectTestCase {
 		assertTrue("mapping.txt is missing", mapping.exists());
 	}
 
+	@Test
 	public void testRebuildOnConfigChange() throws Exception {
 		IWorkspaceDescription description = workspace.getDescription();
 	    description.setAutoBuilding(true);
@@ -72,36 +76,42 @@ public class Wro4jProjectconfiguratorTest extends AbstractMavenProjectTestCase {
 
 	}
 
+	@Test
 	public void testContextFolder172() throws Exception {
 		IProject p = importProject("projects/p4/pom.xml");
 		waitForJobsToComplete();
 		basicTest(p);
 	}	
 
+	@Test
 	public void testContextFolder171() throws Exception {
 		IProject p = importProject("projects/p4-171/pom.xml");
 		waitForJobsToComplete();
 		basicTest(p);
 	}	
 
+	@Test
 	public void testContextFolder176() throws Exception {
 		IProject p = importProject("projects/p4-176/pom.xml");
 		waitForJobsToComplete();
 		basicTest(p);
 	}	
 
+	@Test
 	public void testMultipleContextFolders() throws Exception {
 		IProject p = importProject("projects/p5/pom.xml");
 		waitForJobsToComplete();
 		basicTest(p);
 	}
 
+	@Test
 	public void testMultipleRelativeContextFolders() throws Exception {
 		IProject[] projects = importProjects("projects/parent-p6", new String[]{"pom.xml", "p6/pom.xml"}, new ResolverConfiguration());
 		waitForJobsToComplete();
 		basicTest(projects[1]);
 	}
 
+	@Test
 	public void testDisableM2eWtpIntegration() throws Exception {
 		IProject p = importProject("projects/p7/pom.xml");
 		waitForJobsToComplete();
