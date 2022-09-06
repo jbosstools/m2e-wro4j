@@ -1,0 +1,47 @@
+name: Java CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macOS-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.m2/wrapper
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml', '**/maven-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Build with Maven
+        run: ./mvnw --batch-mode --update-snapshots verify -Pflat-repo
+
+      - name: Upload p2 update site
+        uses: actions/upload-artifact@v3
+        if: runner.os == 'Linux'
+        with:
+          name: jbang.eclipse
+          path: dev.jbang.eclipse.site/target/repository/*
+
+      - name: Deploy p2 update site
+        if: github.ref == 'refs/heads/main' && runner.os == 'Linux'
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{secrets.GITHUB_TOKEN}}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            org.jboss.tools.m2e.wro4j.site/target/flat-repository/*
