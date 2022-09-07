@@ -33,10 +33,10 @@ jobs:
         if: runner.os == 'Linux'
         with:
           name: jbang.eclipse
-          path: dev.jbang.eclipse.site/target/site/*
+          path: org.jboss.tools.m2e.wro4j.site/target/site/*
 
       - name: Deploy p2 update site
-        if: github.ref == 'refs/heads/main' && runner.os == 'Linux'
+        if: github.ref == 'refs/heads/master' && runner.os == 'Linux'
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{secrets.GITHUB_TOKEN}}"
