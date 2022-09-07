@@ -1,6 +1,12 @@
 name: Java CI
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - "*.*.*"
 
 jobs:
   build:
@@ -45,3 +51,10 @@ jobs:
           title: "Development Build"
           files: |
             org.jboss.tools.m2e.wro4j.site/target/flat-site/*
+      
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux'
+        with:
+          files: |
+             org.jboss.tools.m2e.wro4j.site/target/flat-site/*
