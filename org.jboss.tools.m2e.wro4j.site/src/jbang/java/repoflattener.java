@@ -47,9 +47,9 @@ public class repoflattener {
   public static void main(String... args) throws IOException {
     Path baseDir = (args == null || args.length == 0) ? Path.of("") : Path.of(args[0]);
 
-    Path originalRepo = baseDir.resolve("target").resolve("repository");
+    Path originalRepo = baseDir.resolve("target").resolve("site");
     System.out.println("🛠 flattening " + originalRepo.toAbsolutePath());
-    Path flatRepo = originalRepo.resolveSibling("flat-repository");
+    Path flatRepo = originalRepo.resolveSibling("flat-site");
     if (Files.exists(flatRepo)) {
       PathUtils.deleteDirectory(flatRepo);
     }
@@ -70,7 +70,7 @@ public class repoflattener {
     createXZ(artifactsXml, flatRepo);
     createJar(artifactsXml, flatRepo);
 
-    System.out.println("🙌 repository was flattened to " + flatRepo.toAbsolutePath());
+    System.out.println("🙌 site was flattened to " + flatRepo.toAbsolutePath());
   }
 
   private static Path extractAndRewriteArtifactXml(Path archive) throws IOException {

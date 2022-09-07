@@ -33,7 +33,7 @@ jobs:
         if: runner.os == 'Linux'
         with:
           name: jbang.eclipse
-          path: dev.jbang.eclipse.site/target/repository/*
+          path: dev.jbang.eclipse.site/target/site/*
 
       - name: Deploy p2 update site
         if: github.ref == 'refs/heads/main' && runner.os == 'Linux'
@@ -44,4 +44,4 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            org.jboss.tools.m2e.wro4j.site/target/flat-repository/*
+            org.jboss.tools.m2e.wro4j.site/target/flat-site/*
