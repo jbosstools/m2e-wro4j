@@ -19,5 +19,4 @@ If the Eclipse Marketplace Client is installed in you Eclipse distribution, you 
 Alternatively, you can install m2e-wro4j from regular P2 update sites : 
 
 * New releases are available from http://download.jboss.org/jbosstools/updates/m2e-wro4j/ 
-* Dev builds can be installed from http://download.jboss.org/jbosstools/builds/staging/m2e-wro4j/all/repo/
-
+* Dev builds can be installed from https://github.com/jbosstools/m2e-wro4j/releases/download/latest/ 
