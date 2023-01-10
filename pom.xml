@@ -24,7 +24,7 @@
   <packaging>pom</packaging>
   <name>M2E connector for WRO4J :: Parent </name>
   <properties>
-    <tycho-version>2.7.5</tycho-version>
+    <tycho-version>3.0.1</tycho-version>
     <tycho-extras-version>${tycho-version}</tycho-extras-version>
     <test.timeout>600</test.timeout><!--  10 mins -->       
     <tycho.test.jvmArgs>-Xmx512m</tycho.test.jvmArgs>

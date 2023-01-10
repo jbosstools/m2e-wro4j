@@ -39,7 +39,7 @@ jobs:
         if: runner.os == 'Linux'
         with:
           name: jbang.eclipse
-          path: org.jboss.tools.m2e.wro4j.site/target/site/*
+          path: org.jboss.tools.m2e.wro4j.site/target/repository/*
 
       - name: Deploy p2 update site
         if: github.ref == 'refs/heads/main' && runner.os == 'Linux'
@@ -50,11 +50,11 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            org.jboss.tools.m2e.wro4j.site/target/flat-site/*
+            org.jboss.tools.m2e.wro4j.site/target/flat-repository/*
       
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/') && runner.os == 'Linux'
         with:
           files: |
-             org.jboss.tools.m2e.wro4j.site/target/flat-site/*
+             org.jboss.tools.m2e.wro4j.site/target/flat-repository/*
