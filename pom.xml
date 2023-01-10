@@ -20,7 +20,7 @@
 
   <groupId>org.jboss.tools.m2e.wro4j</groupId>
   <artifactId>org.jboss.tools.m2e.wro4j.parent</artifactId>
-  <version>1.2.0-SNAPSHOT</version>
+  <version>1.2.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>M2E connector for WRO4J :: Parent </name>
   <properties>
@@ -59,7 +59,7 @@
     <repository>
       <id>orbit</id>
       <layout>p2</layout>
-      <url>https://download.eclipse.org/tools/orbit/downloads/drops/S20220726152247/repository/</url>
+      <url>https://download.eclipse.org/tools/orbit/downloads/drops/R20220830213456/repository/</url>
     </repository>
   </repositories>
 

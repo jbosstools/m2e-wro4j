@@ -3,6 +3,6 @@ Bundle-ManifestVersion: 2
 Automatic-Module-Name: org.jboss.tools.m2e.wro4j.ui
 Bundle-Name: m2e connector for wro4j
 Bundle-SymbolicName: org.jboss.tools.m2e.wro4j.ui;singleton:=true
-Bundle-Version: 1.2.0.qualifier
+Bundle-Version: 1.2.1.qualifier
 Bundle-Vendor: Red Hat, Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-17
