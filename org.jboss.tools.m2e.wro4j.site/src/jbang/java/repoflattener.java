@@ -47,9 +47,9 @@ public class repoflattener {
   public static void main(String... args) throws IOException {
     Path baseDir = (args == null || args.length == 0) ? Path.of("") : Path.of(args[0]);
 
-    Path originalRepo = baseDir.resolve("target").resolve("site");
+    Path originalRepo = baseDir.resolve("target").resolve("repository");
     System.out.println("🛠 flattening " + originalRepo.toAbsolutePath());
-    Path flatRepo = originalRepo.resolveSibling("flat-site");
+    Path flatRepo = originalRepo.resolveSibling("flat-repository");
     if (Files.exists(flatRepo)) {
       PathUtils.deleteDirectory(flatRepo);
     }
