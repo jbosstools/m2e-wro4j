@@ -21,19 +21,7 @@
   <packaging>eclipse-repository</packaging>
 
   <name>M2E connector for WRO4J :: Site </name>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-packaging-plugin</artifactId>
-        <version>${tycho-version}</version>
-        <configuration>
-          <metadataRepositoryName>Maven Integration for WRO4J</metadataRepositoryName>
-          <artifactRepositoryName>Maven Integration for WRO4J</artifactRepositoryName>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+
   <profiles>
     <profile>
         <id>skip-flat-repo</id>
