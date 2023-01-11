@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description name="M2E connector for WRO4J">
-      M2E connector for WRO4J
-   </description>
-   <category name="m2e-wro4j"/>
-   <feature url="features/org.jboss.tools.m2e.wro4j.feature_0.0.0.qualifier.jar" id="org.jboss.tools.m2e.wro4j.feature" version="0.0.0">
+   <feature url="features/org.jboss.tools.m2e.wro4j.feature_0.0.0.jar" id="org.jboss.tools.m2e.wro4j.feature" version="0.0.0">
       <category name="m2e-wro4j"/>
    </feature>
    <category-def name="m2e-wro4j" label="M2E connector for WRO4J"/>
