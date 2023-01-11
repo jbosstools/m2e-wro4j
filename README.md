@@ -35,7 +35,7 @@ Alternatively, in Eclipse:
 - open Help > Install New Software...
 - work with: 
     * `https://github.com/jbosstools/m2e-wro4j/releases/download/latest/` for CI builds
-    * `https://github.com/jbosstools/m2e-wro4j/releases/download/1.2.0/` for the latest release
+    * `https://github.com/jbosstools/m2e-wro4j/releases/download/1.2.1/` for the latest release
     * `http://download.jboss.org/jbosstools/updates/m2e-wro4j/` for older (1.1.x) releases
 - expand the category and select the `m2e connector for WRO4J`
 - proceed with the installation
